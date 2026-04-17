@@ -4,7 +4,7 @@ import threading
 
 # localhost will connect using local server IP (0.0.0.0)
 LOCALHOST = '127.0.0.2'
-REMOTEHOST = '172.27.51.40'
+REMOTEHOST = '128.146.189.120'
 SERVER_PORT = 6767
 
 def server_connect():
@@ -39,6 +39,12 @@ def broadcast_client_handler():
         print("\nunable to connect to server, ensure server is on and remote IP is correct\n\nreturning to menu")
         return
     
+    server_prompt = client.recv(1024).decode()
+    print(server_prompt)
+    username = input()
+    client.send(username.encode('utf-8'))
+    
+    print(f"\nWelcome {username}! You are in Broadcast Mode.")
     print("\nListening for broadcast... enter messages to broadcast (type 'exit' to exit)\n")
     
     def receive_messages(client, stop_signal):
@@ -66,7 +72,60 @@ def broadcast_client_handler():
     
     stop_signal.set()
             
+def one_on_one_client_handler():
+    print("attempting to connect to server...")
+    client = server_connect()
+    
+    if client is None:
+        print("\nunable to connect to server, ensure server is on.\nreturning to menu")
+        return
         
+    # Wait for the server to request a username 
+    server_prompt = client.recv(1024).decode()
+    print(server_prompt)
+    
+    # Input the username from the user and send it to the server 
+    username = input()
+    client.send(username.encode('utf-8'))
+    
+    print(f"\nWelcome {username}! You are in One-on-One Chat.")
+    print("To send a private message, type in the format: @username message ")
+    print("Type 'exit' to return to menu\n")
+    
+    stop_signal = threading.Event()
+    
+    def receive_messages(client, stop_signal):
+        while not stop_signal.is_set():
+            try:
+                data = client.recv(1024)
+                if data:
+                    print(data.decode())
+            except:
+                break
+                
+    # Start a background thread to continuously receive incoming messages 
+    threading.Thread(target=receive_messages, daemon=True, args=(client, stop_signal)).start()
+        
+    def send_messages(client):
+        while True:
+            # Accept user input from the keyboard 
+            user_in = input()
+            
+            if user_in == "exit":
+                print("Exiting One-on-One mode, returning to menu")    
+                client.send(b"exit")
+                return
+            
+            # Ensure the user is using the correct private message format
+            if not user_in.startswith("@"):
+                print("Error: Please use the format '@username message'")
+                continue
+                
+            # Send the message to the server for delivery to the target user 
+            client.send(user_in.encode('utf-8'))
+            
+    send_messages(client)
+    stop_signal.set()       
         
 while (True):
     print("\n[1] Broadcast\n[2] One-on-One\n[3] Third Feature\n[4] Exit")
@@ -85,8 +144,7 @@ while (True):
         case 1:
             broadcast_client_handler()
         case 2:
-            # TODO: one-on-one
-            continue
+            one_on_one_client_handler()
         case 3:
             # TODO: AI feature
             continue
