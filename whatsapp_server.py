@@ -40,15 +40,13 @@ def handle_connection(conn, addr, username):
                     target_user = parts[0][1:]
                     msg_text = parts[1]
                     
-                    # If target username exists in the client dictionary 
                     if target_user in clients:
-                        # Send the message only to that specific target client 
+                        # Send message to only target
                         clients[target_user].send(f"[Private] {username}: {msg_text}".encode('utf-8'))
                     else:
-                        # Inform the sender that the target user was not found 
+                        # No user
                         conn.send(f"Server: User '{target_user}' not found.".encode('utf-8'))
                 else:
-                    # Inform the sender to use the correct format 
                     conn.send("Server: Invalid format. Use '@username message'".encode('utf-8'))
                     
             
@@ -86,7 +84,6 @@ while (True):
         clients[username] = conn
         print(f"{addr} registered as '{username}'")
         
-        # Start a new thread to handle communication with that client 
         threading.Thread(target=handle_connection, daemon=True, args=(conn, addr, username)).start()
     
     except socket.timeout:

@@ -84,7 +84,7 @@ def one_on_one_client_handler():
     server_prompt = client.recv(1024).decode()
     print(server_prompt)
     
-    # Input the username from the user and send it to the server 
+    # Send username to server
     username = input()
     client.send(username.encode('utf-8'))
     
@@ -103,12 +103,11 @@ def one_on_one_client_handler():
             except:
                 break
                 
-    # Start a background thread to continuously receive incoming messages 
+    # Background thread to listen for messages
     threading.Thread(target=receive_messages, daemon=True, args=(client, stop_signal)).start()
         
     def send_messages(client):
         while True:
-            # Accept user input from the keyboard 
             user_in = input()
             
             if user_in == "exit":
@@ -116,12 +115,12 @@ def one_on_one_client_handler():
                 client.send(b"exit")
                 return
             
-            # Ensure the user is using the correct private message format
+            # Ensure right format
             if not user_in.startswith("@"):
                 print("Error: Please use the format '@username message'")
                 continue
                 
-            # Send the message to the server for delivery to the target user 
+            # Send message to server
             client.send(user_in.encode('utf-8'))
             
     send_messages(client)
