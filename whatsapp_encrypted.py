@@ -7,7 +7,7 @@ from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 
 # localhost will connect using local server IP (0.0.0.0)
-LOCALHOST = '127.0.0.2'
+LOCALHOST = '127.0.0.1'
 REMOTEHOST = '128.146.189.120'
 SERVER_PORT = 6767
 
