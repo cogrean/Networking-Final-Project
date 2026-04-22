@@ -1,6 +1,6 @@
 import socket 
 
-HOST_IP = '127.0.0.1'
+HOST_IP = '128.146.189.120'
 PORT = 1234
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

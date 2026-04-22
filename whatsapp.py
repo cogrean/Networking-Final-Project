@@ -3,8 +3,8 @@ import sys
 import threading
 
 # localhost will connect using local server IP (0.0.0.0)
-LOCALHOST = '127.0.0.2'
-REMOTEHOST = '128.146.189.120'
+LOCALHOST = '127.0.0.1'
+REMOTEHOST = '172.27.216.210'
 SERVER_PORT = 6767
 
 def server_connect():
